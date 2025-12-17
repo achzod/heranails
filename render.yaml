@@ -13,8 +13,6 @@ services:
         value: production
       - key: DATA_DIR
         value: /var/data
-      - key: PORT
-        generateValue: true
     disk:
       name: nailsby-hera-data
       mountPath: /var/data
