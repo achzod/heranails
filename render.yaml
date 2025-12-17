@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: nailsby-hera
+    env: node
+    plan: starter
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATA_DIR
+        value: /var/data
+    disk:
+      name: nailsby-hera-data
+      mountPath: /var/data
+      sizeGB: 1
+
+
+
+

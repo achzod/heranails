@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink: #0b0b0d;
+  --ivory: #f7f3ee;
+  --ivory-strong: #fffcf7;
+  --gold: #c8a45d;
+  --line: rgba(11, 11, 13, 0.12);
+  --shadow: rgba(11, 11, 13, 0.18);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--ivory);
+  color: var(--ink);
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(200, 164, 93, 0.35);
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-in;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.8s ease-out;
+  }
+  
+  .animate-slide-down {
+    animation: slideDown 0.8s ease-out;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Modern luxury styles */
+.luxury-shadow {
+  box-shadow: 0 30px 80px rgba(11, 11, 13, 0.18);
+}
+
+.luxury-gradient {
+  background: linear-gradient(180deg, #fffcf7 0%, #f7f3ee 100%);
+}
+
+.glass-effect {
+  background: rgba(247, 243, 238, 0.72);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(11, 11, 13, 0.10);
+}
+
+.btn-luxury {
+  @apply inline-flex items-center justify-center px-10 py-4 rounded-full border border-ink-900 bg-ink-900 text-ivory-50
+         font-medium uppercase tracking-[0.18em] text-xs
+         transition-all duration-300 hover:bg-transparent hover:text-ink-900 hover:shadow-luxeSoft;
+}
+
+.btn-luxury-outline {
+  @apply inline-flex items-center justify-center px-10 py-4 rounded-full border border-gold-500 bg-transparent text-ink-900
+         font-medium uppercase tracking-[0.18em] text-xs
+         transition-all duration-300 hover:bg-ink-900 hover:text-ivory-50 hover:shadow-luxeSoft;
+}
+
+.section-title {
+  @apply font-serif text-4xl md:text-5xl lg:text-6xl text-center mb-6 text-ink-900 font-semibold tracking-[-0.02em];
+}
+
+.section-subtitle {
+  @apply text-base md:text-lg text-center text-ink-600 max-w-2xl mx-auto mb-12 leading-relaxed;
+}
+
+.kicker {
+  @apply text-[11px] uppercase tracking-[0.22em] text-ink-600;
+}
+
+.card-luxe {
+  @apply bg-ivory-50 border border-ink-900/10 rounded-xl shadow-luxeSoft;
+}
+
