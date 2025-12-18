@@ -54,11 +54,14 @@ export default function AdminPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
+    console.log('[Admin] Login attempt password:', password)
     // Simple authentication (replace with real authentication in production)
     if (password === 'hera2024') {
+      console.log('[Admin] Password correct, setting auth to true')
       setIsAuthenticated(true)
       localStorage.setItem('admin_auth', 'true')
     } else {
+      console.log('[Admin] Password incorrect:', password)
       alert('Incorrect password')
     }
   }
