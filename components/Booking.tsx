@@ -24,15 +24,22 @@ export default function Booking() {
     message: ''
   })
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
   const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([])
 
   // Générer les 14 prochains jours
   const dates = Array.from({ length: 14 }, (_, i) => addDays(new Date(), i))
 
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   // Charger les créneaux disponibles
   useEffect(() => {
-    loadAvailableSlots()
-  }, [selectedDate])
+    if (isMounted) {
+      loadAvailableSlots()
+    }
+  }, [selectedDate, isMounted])
 
   const loadAvailableSlots = async () => {
     try {
@@ -45,6 +52,10 @@ export default function Booking() {
         const data = await response.json()
         const slots = (data.slots || []) as TimeSlot[]
         setAvailableSlots(slots)
+      } else {
+        const errorData = await response.json()
+        console.error('API Error details:', errorData)
+        throw new Error('API failed')
       }
     } catch (error) {
       console.error('Error loading slots:', error)
@@ -62,7 +73,7 @@ export default function Booking() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!selectedTime || !formData.name || !formData.email || !formData.phone) {
       alert('Please fill in all required fields')
       return
@@ -87,12 +98,17 @@ export default function Booking() {
           setFormData({ name: '', email: '', phone: '', message: '' })
           setSelectedTime('')
         }, 3000)
+      } else {
+        const errorData = await response.json()
+        alert(`Booking failed: ${errorData.error || 'Unknown error'}`)
       }
     } catch (error) {
       console.error('Booking error:', error)
       alert('An error occurred. Please try again.')
     }
   }
+
+  if (!isMounted) return null
 
   if (isSubmitted) {
     return (
@@ -149,10 +165,10 @@ export default function Booking() {
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Date Selection */}
             <div>
-            <label className="flex items-center text-lg font-semibold text-neutral-900 mb-4">
-              <Calendar className="mr-2 text-primary-600" size={24} />
-              Choose a date
-            </label>
+              <label className="flex items-center text-lg font-semibold text-neutral-900 mb-4">
+                <Calendar className="mr-2 text-primary-600" size={24} />
+                Choose a date
+              </label>
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-3">
                 {dates.map((date) => (
                   <motion.button
@@ -164,11 +180,10 @@ export default function Booking() {
                     }}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className={`p-3 rounded-xl text-center transition-all ${
-                      isSameDay(date, selectedDate)
-                        ? 'bg-gradient-to-br from-primary-500 to-accent-500 text-white shadow-lg'
-                        : 'bg-neutral-50 hover:bg-neutral-100 text-neutral-700'
-                    }`}
+                    className={`p-3 rounded-xl text-center transition-all ${isSameDay(date, selectedDate)
+                      ? 'bg-gradient-to-br from-primary-500 to-accent-500 text-white shadow-lg'
+                      : 'bg-neutral-50 hover:bg-neutral-100 text-neutral-700'
+                      }`}
                   >
                     <div className="text-xs font-semibold">
                       {format(date, 'EEE', { locale: enUS })}
@@ -186,10 +201,10 @@ export default function Booking() {
 
             {/* Time Selection */}
             <div>
-            <label className="flex items-center text-lg font-semibold text-neutral-900 mb-4">
-              <Clock className="mr-2 text-primary-600" size={24} />
-              Choose a time
-            </label>
+              <label className="flex items-center text-lg font-semibold text-neutral-900 mb-4">
+                <Clock className="mr-2 text-primary-600" size={24} />
+                Choose a time
+              </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                 {availableSlots.map((slot) => (
                   <motion.button
@@ -199,13 +214,12 @@ export default function Booking() {
                     disabled={!slot.available}
                     whileHover={slot.available ? { scale: 1.05 } : {}}
                     whileTap={slot.available ? { scale: 0.95 } : {}}
-                    className={`p-4 rounded-xl font-semibold transition-all ${
-                      !slot.available
-                        ? 'bg-neutral-100 text-neutral-400 cursor-not-allowed'
-                        : selectedTime === slot.time
+                    className={`p-4 rounded-xl font-semibold transition-all ${!slot.available
+                      ? 'bg-neutral-100 text-neutral-400 cursor-not-allowed'
+                      : selectedTime === slot.time
                         ? 'bg-gradient-to-br from-primary-500 to-accent-500 text-white shadow-lg'
                         : 'bg-neutral-50 hover:bg-neutral-100 text-neutral-700'
-                    }`}
+                      }`}
                   >
                     {slot.time}
                   </motion.button>
@@ -216,10 +230,10 @@ export default function Booking() {
             {/* Personal Information */}
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-              <label className="flex items-center text-sm font-semibold text-neutral-700 mb-2">
-                <User className="mr-2 text-primary-600" size={18} />
-                Full Name *
-              </label>
+                <label className="flex items-center text-sm font-semibold text-neutral-700 mb-2">
+                  <User className="mr-2 text-primary-600" size={18} />
+                  Full Name *
+                </label>
                 <input
                   type="text"
                   required
@@ -231,10 +245,10 @@ export default function Booking() {
               </div>
 
               <div>
-              <label className="flex items-center text-sm font-semibold text-neutral-700 mb-2">
-                <Phone className="mr-2 text-primary-600" size={18} />
-                Phone *
-              </label>
+                <label className="flex items-center text-sm font-semibold text-neutral-700 mb-2">
+                  <Phone className="mr-2 text-primary-600" size={18} />
+                  Phone *
+                </label>
                 <input
                   type="tel"
                   required
@@ -247,10 +261,10 @@ export default function Booking() {
             </div>
 
             <div>
-            <label className="flex items-center text-sm font-semibold text-neutral-700 mb-2">
-              <Mail className="mr-2 text-primary-600" size={18} />
-              Email *
-            </label>
+              <label className="flex items-center text-sm font-semibold text-neutral-700 mb-2">
+                <Mail className="mr-2 text-primary-600" size={18} />
+                Email *
+              </label>
               <input
                 type="email"
                 required
@@ -262,10 +276,10 @@ export default function Booking() {
             </div>
 
             <div>
-            <label className="flex items-center text-sm font-semibold text-neutral-700 mb-2">
-              <MessageSquare className="mr-2 text-primary-600" size={18} />
-              Message (optional)
-            </label>
+              <label className="flex items-center text-sm font-semibold text-neutral-700 mb-2">
+                <MessageSquare className="mr-2 text-primary-600" size={18} />
+                Message (optional)
+              </label>
               <textarea
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}

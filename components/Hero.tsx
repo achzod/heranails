@@ -2,28 +2,41 @@
 
 import { motion } from 'framer-motion'
 import { Sparkles, ArrowDown } from 'lucide-react'
+import { useState, useEffect } from 'react'
 
 export default function Hero() {
+  const [bubbles, setBubbles] = useState<any[]>([])
+
+  useEffect(() => {
+    setBubbles([...Array(20)].map((_, i) => ({
+      id: i,
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      duration: 3 + Math.random() * 2,
+      delay: Math.random() * 2,
+    })))
+  }, [])
+
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center luxury-gradient overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
-        {[...Array(20)].map((_, i) => (
+        {bubbles.map((bubble) => (
           <motion.div
-            key={i}
+            key={bubble.id}
             className="absolute w-2 h-2 bg-primary-300 rounded-full opacity-20"
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
+              left: bubble.left,
+              top: bubble.top,
             }}
             animate={{
               y: [0, -30, 0],
               opacity: [0.2, 0.5, 0.2],
             }}
             transition={{
-              duration: 3 + Math.random() * 2,
+              duration: bubble.duration,
               repeat: Infinity,
-              delay: Math.random() * 2,
+              delay: bubble.delay,
             }}
           />
         ))}

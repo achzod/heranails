@@ -27,6 +27,7 @@ interface Booking {
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
   const [password, setPassword] = useState('')
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
   const [slots, setSlots] = useState<TimeSlot[]>([])
@@ -37,11 +38,19 @@ export default function AdminPage() {
   const dates = Array.from({ length: 30 }, (_, i) => addDays(new Date(), i))
 
   useEffect(() => {
-    if (isAuthenticated) {
+    setIsMounted(true)
+    const auth = localStorage.getItem('admin_auth')
+    if (auth === 'true') {
+      setIsAuthenticated(true)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (isAuthenticated && isMounted) {
       loadSlots()
       loadBookings()
     }
-  }, [isAuthenticated, selectedDate])
+  }, [isAuthenticated, selectedDate, isMounted])
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
@@ -141,6 +150,8 @@ export default function AdminPage() {
     }
   }
 
+  if (!isMounted) return null
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen luxury-gradient flex items-center justify-center p-4">
@@ -211,21 +222,19 @@ export default function AdminPage() {
         <div className="flex gap-4 mb-8">
           <button
             onClick={() => setActiveTab('slots')}
-            className={`px-6 py-3 rounded-xl font-semibold transition-all ${
-              activeTab === 'slots'
-                ? 'bg-primary-500 text-white shadow-lg'
-                : 'bg-white text-neutral-600 hover:bg-neutral-50'
-            }`}
+            className={`px-6 py-3 rounded-xl font-semibold transition-all ${activeTab === 'slots'
+              ? 'bg-primary-500 text-white shadow-lg'
+              : 'bg-white text-neutral-600 hover:bg-neutral-50'
+              }`}
           >
             Manage Time Slots
           </button>
           <button
             onClick={() => setActiveTab('bookings')}
-            className={`px-6 py-3 rounded-xl font-semibold transition-all ${
-              activeTab === 'bookings'
-                ? 'bg-primary-500 text-white shadow-lg'
-                : 'bg-white text-neutral-600 hover:bg-neutral-50'
-            }`}
+            className={`px-6 py-3 rounded-xl font-semibold transition-all ${activeTab === 'bookings'
+              ? 'bg-primary-500 text-white shadow-lg'
+              : 'bg-white text-neutral-600 hover:bg-neutral-50'
+              }`}
           >
             Bookings ({bookings.length})
           </button>
@@ -241,11 +250,10 @@ export default function AdminPage() {
                   <button
                     key={date.toISOString()}
                     onClick={() => setSelectedDate(date)}
-                    className={`p-2 rounded-lg text-center transition-all ${
-                      isSameDay(date, selectedDate)
-                        ? 'bg-primary-500 text-white'
-                        : 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700'
-                    }`}
+                    className={`p-2 rounded-lg text-center transition-all ${isSameDay(date, selectedDate)
+                      ? 'bg-primary-500 text-white'
+                      : 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700'
+                      }`}
                   >
                     <div className="text-xs">{format(date, 'EEE', { locale: enUS })}</div>
                     <div className="text-lg font-bold">{format(date, 'd')}</div>
@@ -275,9 +283,8 @@ export default function AdminPage() {
                         <span className="text-xl font-bold text-gray-800">{time}</span>
                         <button
                           onClick={() => toggleSlotAvailability(time, isAvailable)}
-                          className={`p-1 rounded ${
-                            isAvailable ? 'text-green-600 hover:bg-green-50' : 'text-red-600 hover:bg-red-50'
-                          }`}
+                          className={`p-1 rounded ${isAvailable ? 'text-green-600 hover:bg-green-50' : 'text-red-600 hover:bg-red-50'
+                            }`}
                           title={isAvailable ? 'Available' : 'Unavailable'}
                         >
                           {isAvailable ? <Check size={20} /> : <X size={20} />}
@@ -301,7 +308,7 @@ export default function AdminPage() {
                 {bookings.map((booking) => (
                   <div
                     key={booking.id}
-                      className="p-6 rounded-xl bg-neutral-50 border-2 border-neutral-200"
+                    className="p-6 rounded-xl bg-neutral-50 border-2 border-neutral-200"
                   >
                     <div className="flex justify-between items-start mb-4">
                       <div>
