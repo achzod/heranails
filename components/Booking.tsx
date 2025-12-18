@@ -73,13 +73,16 @@ export default function Booking() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    console.log('[Booking] Submitting form...', { date: format(selectedDate, 'yyyy-MM-dd'), time: selectedTime })
 
     if (!selectedTime || !formData.name || !formData.email || !formData.phone) {
+      console.warn('[Booking] Missing fields:', { selectedTime, ...formData })
       alert('Please fill in all required fields')
       return
     }
 
     try {
+      console.log('[Booking] POST /api/book')
       const response = await fetch('/api/book', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
